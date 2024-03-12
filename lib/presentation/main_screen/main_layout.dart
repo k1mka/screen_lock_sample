@@ -74,32 +74,33 @@ class _MainLayoutState extends State<MainLayout> {
   }
 
   Widget createPasswordWidget() {
-    return ElevatedButton(
-      onPressed: () {
-        final controller = InputController();
-        screenLockCreate(
-          context: context,
-          inputController: controller,
-          onConfirmed: (matchedText) {
-            _savePinCode(matchedText);
-            _setFirstTimeUser();
-            setState(() {
-              passwordForButton2 = matchedText;
-              isFirstTimeUser = false;
-            });
-            Navigator.of(context).pop();
+    final controller = InputController();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      screenLockCreate(
+        context: context,
+        inputController: controller,
+        onConfirmed: (matchedText) {
+          _savePinCode(matchedText);
+          _setFirstTimeUser();
+          setState(() {
+            passwordForButton2 = matchedText;
+            isFirstTimeUser = false;
+          });
+          Navigator.of(context).pop();
+        },
+        footer: TextButton(
+          onPressed: () {
+            controller.unsetConfirmed();
           },
-          footer: TextButton(
-            onPressed: () {
-              controller.unsetConfirmed();
-            },
-            child: const Text('Reset input'),
-          ),
-        );
-      },
-      child: const Text('Create Password'),
-    );
+          child: const Text('Reset input'),
+        ),
+      );
+    });
+
+    return Container();
   }
+
 
   Widget enterPasswordWidget() {
     return ElevatedButton(
