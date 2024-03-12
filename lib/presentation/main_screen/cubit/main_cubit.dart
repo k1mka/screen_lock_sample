@@ -17,15 +17,4 @@ class PinCodeCubit extends Cubit<PinCodeState> {
       emit(ErrorPinCodeState(error));
     }
   }
-
-  Future<String?> getPinCode() async {
-    try {
-      emit(LoadingPinCodeState());
-      finalPinCode = await repository.getPinCode();
-      if(finalPinCode != null) emit(SuccessLoadedPinCodeState(finalPinCode!));
-    } catch (error) {
-      emit(ErrorPinCodeState(error));
-    }
-    return finalPinCode;
-  }
 }

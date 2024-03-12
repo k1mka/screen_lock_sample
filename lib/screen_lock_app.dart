@@ -30,26 +30,24 @@ class WeltradeApp extends StatelessWidget {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const MaterialApp(
             title: 'Weltrade',
-            home:  Scaffold(
-                backgroundColor: lightBlack,
-                body: Center(
-                  child: CircularProgressIndicator(),
-                ),
+            home: Scaffold(
+              backgroundColor: lightBlack,
+              body: Center(
+                child: CircularProgressIndicator(),
               ),
-            );
+            ),
+          );
         } else {
           return MaterialApp(
             title: 'Weltrade',
             home: _getInitScreen(snapshot.data),
-            );
+          );
         }
       },
     );
   }
 
   Widget _getInitScreen(String? pinCode) {
-    return pinCode == null
-        ? const PinCodeScreen()
-        : const SecondScreen();
+    return pinCode == null ? const PinCodeScreen() : const SecondScreen();
   }
 }

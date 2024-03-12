@@ -20,19 +20,14 @@ class _PinCodeLayoutState extends State<PinCodeLayout> {
   @override
   void initState() {
     super.initState();
-    _getPinCode();
   }
 
   void _navigateToWebView() {
-    Navigator.of(context).push(
+    Navigator.of(context).pushReplacement(
       MaterialPageRoute(
         builder: (context) => const SecondScreen(),
       ),
     );
-  }
-
-  Future<void> _getPinCode() async {
-    currentPinCode = await context.read<PinCodeCubit>().getPinCode();
   }
 
   void _savePinCode(String pinCode) async {
@@ -46,20 +41,20 @@ class _PinCodeLayoutState extends State<PinCodeLayout> {
         title: const Text('Screen Lock'),
       ),
       body: BlocConsumer<PinCodeCubit, PinCodeState>(
-          listener: (context, state) {},
-          builder: (context, state) {
-            return Padding(
-              padding: const EdgeInsets.all(16),
-              child: Center(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(
-                    maxWidth: 700,
-                  ),
-                  child: createPasswordWidget(),
+        listener: (context, state) {},
+        builder: (context, state) {
+          return Padding(
+            padding: const EdgeInsets.all(16),
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(
+                  maxWidth: 700,
                 ),
+                child: createPasswordWidget(),
               ),
-            );
-          }
+            ),
+          );
+        },
       ),
     );
   }
@@ -85,19 +80,6 @@ class _PinCodeLayoutState extends State<PinCodeLayout> {
     });
 
     return Container();
-  }
-
-  Widget enterPasswordWidget() {
-    return ElevatedButton(
-      onPressed: () => screenLock(
-        context: context,
-        correctString: "0000",
-      ),
-      child: const Text(
-        'Enter Password',
-        textAlign: TextAlign.center,
-      ),
-    );
   }
 
 }
