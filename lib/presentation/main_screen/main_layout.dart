@@ -79,6 +79,7 @@ class _MainLayoutState extends State<MainLayout> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       screenLockCreate(
         context: context,
+        canCancel: false,
         inputController: controller,
         onConfirmed: (matchedText) {
           _savePinCode(matchedText);
