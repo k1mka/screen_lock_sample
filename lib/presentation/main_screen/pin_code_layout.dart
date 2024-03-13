@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screen_lock/flutter_screen_lock.dart';
+import 'package:intl/intl.dart';
+import 'package:screen_lock/data/service/shared_preff_storage_impl.dart';
 import 'package:screen_lock/presentation/main_screen/cubit/pin_code_cubit.dart';
 import 'package:screen_lock/presentation/main_screen/cubit/pin_code_state.dart';
 
@@ -36,18 +38,11 @@ class _PinCodeLayoutState extends State<PinCodeLayout> {
     await context.read<PinCodeCubit>().setPinCode(pinCode);
   }
 
-  Future<void> _checkShouldShowPinCodeScreen() async {
-    bool skipForDay =  await context.read<PinCodeCubit>().getSkipForDay();
-    if (!skipForDay) {
-      // If user hasn't skipped for a day, show the pin code screen
-      _showPinCodeScreen();
-    }
-  }
-
-  void _showPinCodeScreen() {
+  void _showPinCodeScreen() async {
     final controller = InputController();
+    final sharedPrefStorage = SharedPrefStorageImplements();
 
-    WidgetsBinding.instance?.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       screenLockCreate(
         context: context,
         canCancel: canCancel,
@@ -60,26 +55,20 @@ class _PinCodeLayoutState extends State<PinCodeLayout> {
                 content: Text('Вы точно хотите пропустить этот шаг?'),
                 actions: [
                   TextButton(
-                    onPressed: () {
-                      _skipForDay();
+                    onPressed: () async {
+                      final tomorrow = DateTime.now().add(const Duration(hours: 12));
+                      final formattedDate = DateFormat("dd-MM-yyyy").format(tomorrow);
+                      await sharedPrefStorage.setSkipForDayDate(formattedDate);
                       Navigator.of(context).pop();
-                      Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(
-                          builder: (context) => const SecondScreen(),
-                        ),
-                      );
+                      _navigateToWebView();
                     },
                     child: Text('Напомнить через 1 день'),
                   ),
                   TextButton(
-                    onPressed: () {
-                      _skipForever();
+                    onPressed: () async {
+                      await sharedPrefStorage.setSkipForever(true);
                       Navigator.of(context).pop();
-                      Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(
-                          builder: (context) => const SecondScreen(),
-                        ),
-                      );
+                      _navigateToWebView();
                     },
                     child: Text('Пропустить навсегда'),
                   ),
@@ -92,7 +81,6 @@ class _PinCodeLayoutState extends State<PinCodeLayout> {
         onConfirmed: (matchedText) async {
           correctPinCode = matchedText;
           _savePinCode(matchedText);
-          await _handleSkipForDay();
           _navigateToWebView();
         },
         footer: TextButton(
@@ -103,22 +91,27 @@ class _PinCodeLayoutState extends State<PinCodeLayout> {
     });
   }
 
-  Future<void> _handleSkipForDay() async {
-    await context.read<PinCodeCubit>().setSkipForDay(true);
-    await context.read<PinCodeCubit>().setSkipForDayDate(_getTodayDateString());
-  }
-  void _skipForDay() async {
-    await context.read<PinCodeCubit>().setSkipForDay(true);
-  }
+  Future<void> _checkShouldShowPinCodeScreen() async {
+    final bool skipForever = await context.read<PinCodeCubit>().getSkipForever();
+    final String? skipForDayDate = await context.read<PinCodeCubit>().getSkipForDayDate();
 
-  void _skipForever() async {
-    await context.read<PinCodeCubit>().setSkipForDay(true);
-    await context.read<PinCodeCubit>().setSkipForever(true);
-  }
 
-  String _getTodayDateString() {
-    DateTime now = DateTime.now();
-    return '${now.year}-${now.month}-${now.day}';
+    if (skipForever) {
+      _navigateToWebView();
+      return;
+    }
+
+    if (skipForDayDate != null) {
+      final currentDate = DateTime.now();
+      final savedDate = DateFormat("dd-MM-yyyy").parse(skipForDayDate);
+
+      if (currentDate.isBefore(savedDate.add(const Duration(hours: 12)))) {
+        _navigateToWebView();
+        return;
+      }
+    }
+
+    _showPinCodeScreen();
   }
 
   @override
@@ -134,16 +127,12 @@ class _PinCodeLayoutState extends State<PinCodeLayout> {
                 constraints: const BoxConstraints(
                   maxWidth: 700,
                 ),
-                child: createPasswordWidget(),
+                child: Container(),
               ),
             ),
           );
         },
       ),
     );
-  }
-
-  Widget createPasswordWidget() {
-    return Container(); // You can implement this as needed
   }
 }

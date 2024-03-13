@@ -45,9 +45,32 @@ class PinCodeCubit extends Cubit<PinCodeState> {
     try {
       final bool skipForDay = await repository.getSkipForDay();
       return skipForDay;
-        } catch (error) {
+    } catch (error) {
       emit(ErrorPinCodeState(error));
       return false;
     }
   }
+
+  Future<bool> getSkipForever() async {
+    try {
+      final bool skipForever = await repository.getSkipForever();
+      return skipForever;
+    } catch (error) {
+      emit(ErrorPinCodeState(error));
+      return true;
+    }
+  }
+
+  Future<String?> getSkipForDayDate() async {
+    try {
+      final String? skipForDayDate = await repository.getSkipForDayDate();
+      return skipForDayDate;
+    } catch (error) {
+      emit(ErrorPinCodeState(error));
+    }
+    return null;
+
+  }
+
+
 }
