@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screen_lock/flutter_screen_lock.dart';
-import 'package:screen_lock/presentation/main_screen/cubit/main_cubit.dart';
-import 'package:screen_lock/presentation/main_screen/cubit/main_state.dart';
+import 'package:screen_lock/presentation/main_screen/cubit/pin_code_cubit.dart';
+import 'package:screen_lock/presentation/main_screen/cubit/pin_code_state.dart';
 import 'package:screen_lock/presentation/second_screen/cubit/second_cubit.dart';
 import 'package:screen_lock/presentation/second_screen/cubit/second_state.dart';
 
