@@ -51,8 +51,8 @@ class _PinCodeLayoutState extends State<PinCodeLayout> {
             context: context,
             builder: (BuildContext context) {
               return AlertDialog(
-                title: Text('Внимание'),
-                content: Text('Вы точно хотите пропустить этот шаг?'),
+                title: Text('Attention'),
+                content: Text('Are you sure you want to skip this step?'),
                 actions: [
                   TextButton(
                     onPressed: () async {
@@ -62,7 +62,7 @@ class _PinCodeLayoutState extends State<PinCodeLayout> {
                       Navigator.of(context).pop();
                       _navigateToWebView();
                     },
-                    child: Text('Напомнить через 1 день'),
+                    child: Text('Remind me in 1 day'),
                   ),
                   TextButton(
                     onPressed: () async {
@@ -70,7 +70,7 @@ class _PinCodeLayoutState extends State<PinCodeLayout> {
                       Navigator.of(context).pop();
                       _navigateToWebView();
                     },
-                    child: Text('Пропустить навсегда'),
+                    child: Text('Skip it forever'),
                   ),
                 ],
               );
