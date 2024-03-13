@@ -1,54 +1,37 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screen_lock/flutter_screen_lock.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:screen_lock/presentation/main_screen/cubit/main_cubit.dart';
+import 'package:screen_lock/presentation/main_screen/cubit/main_state.dart';
+import 'package:screen_lock/presentation/second_screen/second_screen.dart';
 
-class MainLayout extends StatefulWidget {
-  const MainLayout({super.key});
+class PinCodeLayout extends StatefulWidget {
+  const PinCodeLayout({super.key});
 
   @override
-  _MainLayoutState createState() => _MainLayoutState();
+  State<PinCodeLayout> createState() => _PinCodeLayoutState();
 }
 
-class _MainLayoutState extends State<MainLayout> {
-  late String passwordForButton2 = '';
-  late bool isFirstTimeUser = false;
+class _PinCodeLayoutState extends State<PinCodeLayout> {
+  late String correctPinCode;
+  String? currentPinCode;
+  bool canCancel = false;
 
   @override
   void initState() {
     super.initState();
-    _checkFirstTimeUser();
   }
 
-  _checkFirstTimeUser() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    bool? firstTimeUser = prefs.getBool('first_time_user') ?? true;
-    if (firstTimeUser) {
-      setState(() {
-        isFirstTimeUser = true;
-      });
-    } else {
-      _loadPinCode();
-    }
+  void _navigateToWebView() {
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(
+        builder: (context) => const SecondScreen(),
+      ),
+    );
   }
 
-  _loadPinCode() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? pinCode = prefs.getString('pin_code');
-    if (pinCode != null) {
-      setState(() {
-        passwordForButton2 = pinCode;
-      });
-    }
-  }
-
-  _savePinCode(String pinCode) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('pin_code', pinCode);
-  }
-
-  _setFirstTimeUser() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('first_time_user', false);
+  void _savePinCode(String pinCode) async {
+    await context.read<PinCodeCubit>().setPinCode(pinCode);
   }
 
   @override
@@ -57,60 +40,46 @@ class _MainLayoutState extends State<MainLayout> {
       appBar: AppBar(
         title: const Text('Screen Lock'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(
-              maxWidth: 700,
+      body: BlocConsumer<PinCodeCubit, PinCodeState>(
+        listener: (context, state) {},
+        builder: (context, state) {
+          return Padding(
+            padding: const EdgeInsets.all(16),
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(
+                  maxWidth: 700,
+                ),
+                child: createPasswordWidget(),
+              ),
             ),
-            child: isFirstTimeUser
-                ? createPasswordWidget()
-                : enterPasswordWidget(),
-          ),
-        ),
+          );
+        },
       ),
     );
   }
 
   Widget createPasswordWidget() {
-    return ElevatedButton(
-      onPressed: () {
-        final controller = InputController();
-        screenLockCreate(
-          context: context,
-          inputController: controller,
-          onConfirmed: (matchedText) {
-            _savePinCode(matchedText);
-            _setFirstTimeUser();
-            setState(() {
-              passwordForButton2 = matchedText;
-              isFirstTimeUser = false;
-            });
-            Navigator.of(context).pop();
-          },
-          footer: TextButton(
-            onPressed: () {
-              controller.unsetConfirmed();
-            },
-            child: const Text('Reset input'),
-          ),
-        );
-      },
-      child: const Text('Create Password'),
-    );
+    final controller = InputController();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      screenLockCreate(
+        context: context,
+        canCancel: canCancel,
+        inputController: controller,
+        onConfirmed: (matchedText) {
+          correctPinCode = matchedText;
+          _savePinCode(matchedText);
+          _navigateToWebView();
+        },
+        footer: TextButton(
+          onPressed: controller.unsetConfirmed,
+          child: const Text('Reset input'),
+        ),
+      );
+    });
+
+    return Container();
   }
 
-  Widget enterPasswordWidget() {
-    return ElevatedButton(
-      onPressed: () => screenLock(
-        context: context,
-        correctString: passwordForButton2,
-      ),
-      child: const Text(
-        'Enter Password',
-        textAlign: TextAlign.center,
-      ),
-    );
-  }
 }

@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:screen_lock/data/domain/repository.dart';
+import 'package:screen_lock/get.it.dart';
+import 'package:screen_lock/presentation/main_screen/cubit/main_cubit.dart';
+import 'package:screen_lock/presentation/main_screen/main_layout.dart';
 
-import 'main_layout.dart';
-
-class MainScreen extends StatelessWidget {
-  const MainScreen({super.key});
+class PinCodeScreen extends StatelessWidget {
+  const PinCodeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const MainLayout();
+    return BlocProvider(
+      create: (BuildContext context) =>
+          PinCodeCubit(repository: getIt<WelTradeRepository>()),
+      child: const PinCodeLayout(),
+    );
   }
 }
