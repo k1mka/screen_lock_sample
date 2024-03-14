@@ -5,6 +5,7 @@ import 'package:screen_lock/get.it.dart';
 import 'package:screen_lock/screen_lock_app.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
