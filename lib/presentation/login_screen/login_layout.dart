@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:screen_lock/presentation/login_screen/cubit/login_cubit.dart';
 import 'package:screen_lock/presentation/login_screen/cubit/login_state.dart';
+import 'package:screen_lock/presentation/web_view_screen/web_view_screen.dart';
 
 class LoginLayout extends StatefulWidget {
   const LoginLayout({super.key});
@@ -11,11 +12,16 @@ class LoginLayout extends StatefulWidget {
 }
 
 class _LoginLayoutState extends State<LoginLayout> {
-
   static const appBarTitle = "Login";
   static const buttonTitle = "Sign in via Apple ID";
 
-  void appleSignIn() {}
+  void appleSignIn() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const WebViewScreen(),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
