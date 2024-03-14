@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:screen_lock/data/domain/repository.dart';
 import 'package:screen_lock/get.it.dart';
+import 'package:screen_lock/presentation/login_screen/login_screen.dart';
 import 'package:screen_lock/presentation/main_screen/main_screen.dart';
 import 'package:screen_lock/presentation/second_screen/second_screen.dart';
 
@@ -38,9 +39,10 @@ class WeltradeApp extends StatelessWidget {
             ),
           );
         } else {
-          return MaterialApp(
+          return const MaterialApp(
             title: 'Weltrade',
-            home: _getInitScreen(snapshot.data),
+            home: LoginScreen(),
+            // _getInitScreen(snapshot.data),
           );
         }
       },
