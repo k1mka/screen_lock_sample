@@ -19,7 +19,12 @@ class _PinCodeLayoutState extends State<PinCodeLayout> {
 
   @override
   void initState() {
+    _isRequestActive();
     super.initState();
+  }
+
+  void _isRequestActive() async {
+    await context.read<PinCodeCubit>().getRemoteValue();
   }
 
   void _navigateToWebView() {
@@ -81,5 +86,4 @@ class _PinCodeLayoutState extends State<PinCodeLayout> {
 
     return Container();
   }
-
 }

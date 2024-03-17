@@ -1,5 +1,5 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:screen_lock/data/service/locale_secure_storage.dart';
+import 'package:screen_lock/data/service/locale/locale_secure_storage.dart';
 
 class LocaleSecureStorageImpl extends LocaleSecureStorage {
   LocaleSecureStorageImpl(this.flutterSecureStorage);

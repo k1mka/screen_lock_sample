@@ -4,6 +4,7 @@ class InitialPinCodeState extends PinCodeState{}
 
 class LoadingPinCodeState extends PinCodeState{}
 
+class GetRemoteValue extends PinCodeState{}
 
 class SuccessLoadedPinCodeState extends PinCodeState{
   SuccessLoadedPinCodeState(this.pinCode);
